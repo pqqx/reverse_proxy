@@ -7,10 +7,11 @@ export default {
     }
 
     try {
+      const hasBody = !["GET", "HEAD"].includes(request.method);
       const req = new Request(target, {
         method: request.method,
         headers: request.headers,
-        body: request.body,
+        body: hasBody ? request.body : null,
         redirect: "manual"
       });
 
