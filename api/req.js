@@ -14,12 +14,16 @@ export default {
         body: hasBody ? request.body : null,
         redirect: "manual"
       });
-
       const response = await fetch(req);
-      const resp = new Response(response.body, response);
-      resp.headers.set("Access-Control-Allow-Origin", "*");
-      
-      return resp;
+      const resph = new Headers(response.headers);
+      resph.delete("content-encoding");
+      resph.delete("content-length");
+      resph.set("Access-Control-Allow-Origin", "*");
+      return new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: resph
+      });
     } catch (e) {
       return new Response("Error: " + e.message, { status: 500 });
     }
