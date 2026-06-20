@@ -8,17 +8,25 @@ export default {
 
     try {
       const hasBody = !["GET", "HEAD"].includes(request.method);
+      const reqHeaders = new Headers(request.headers);
+      reqHeaders.delete("host");
+      reqHeaders.delete("origin");
+      reqHeaders.delete("referer");
+
       const req = new Request(target, {
         method: request.method,
-        headers: request.headers,
+        headers: reqHeaders,
         body: hasBody ? request.body : null,
-        redirect: "manual"
+        redirect: "manual",
+        duplex: "half"
       });
+
       const response = await fetch(req);
       const resph = new Headers(response.headers);
       resph.delete("content-encoding");
       resph.delete("content-length");
       resph.set("Access-Control-Allow-Origin", "*");
+      
       return new Response(response.body, {
         status: response.status,
         statusText: response.statusText,
